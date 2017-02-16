@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>循环and closure</title>
+	<style>
+		div{
+			padding:10px 0;
+
+		}
+	</style>
+</head>
+<body>
+	<div class = "closure">1</div>
+	<div class = "closure">2</div>
+	<div class = "closure">3</div>
+	<div class = "closure">4</div>
+	<div class = "closure">5</div>
+	<script>
+		/*window.onload = function(){
+			var aDiv = document.getElementsByClassName('closure');
+			
+			for(var i = 0, l = aDiv.length; i < l; i++){
+				
+				console.log(i);
+				aDiv[i].onclick = function(){
+					console.log(i);
+					
+				}
+			}
+		}*/
+		/*乘积函数*/
+		var mult = function(){
+			var a = 1;
+			for(var i = 0, l = arguments.length; i < l; i++){
+				a = a * arguments[i];
+			}
+			return a;
+		}
+		/*加入缓存机制*/
+		/*var cache = {};
+		var mult = function(){
+			var args = Array.prototype.join.call(arguments,',');
+			console.log(args);
+			if( cache[ args ] ){
+				return cache[ args ];
+			}
+			var a = 1;
+			for(var i = 0, l = arguments.length; i < l; i++){
+				a = a * arguments[i];
+			}
+			return cache[args] = a;
+		}
+		console.log(mult(1,2,3));
+		console.log(mult(1,2,3));*/
+		/*封装乘积函数*/
+		var mult = (function(){
+			var cache = {};
+			var caclude = function(){
+				var a = 1;
+				for(var i = 0, l = arguments.length; i < l; i++){
+					a = a * arguments[i];
+				}
+				return a;
+			}
+			//	闭包包含了对cache和caclude的引用
+			return function(){
+				var args = Array.prototype.join.call(arguments,',');
+				if(args in cache){
+					return cache[args];
+				}
+				console.log(this);
+				return cache[args] = caclude.apply(null,arguments);
+			}
+		})();
+		console.log(mult(1,2,3));
+		console.log(mult(1,2,3));
+	</script>
+</body>
+</html>

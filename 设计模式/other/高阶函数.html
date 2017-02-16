@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>高阶函数应用</title>
+</head>
+<body>
+	<div>1、判断对象类型</div>
+	<script>
+		/*var type = function(type){
+			return function(obj){
+				console.log(Object.prototype.toString.apply(obj));
+				return Object.prototype.toString.apply(obj) === '[object ' + type + ']';
+			}
+		}
+		var isArray = type('Array');
+		var isString = type('String');
+		console.log(isArray([1,2]));
+		console.log(isString('123'));*/
+		/*循环语句批量注册*/
+		var Type = {};
+		for(var i = 0,type; type = ['String','Array','Number'][i++];){
+			Type['is' + type] = function(type){
+				return function(obj){
+					console.log(Object.prototype.toString.call(obj));
+					console.log(type);
+					return Object.prototype.toString.call(obj) === '[object ' + type + ']';
+				}			
+			}(type)
+		}
+		console.log(Type.isString('123'));
+		console.log(Type.isArray([]));
+	</script>
+</body>
+</html>
