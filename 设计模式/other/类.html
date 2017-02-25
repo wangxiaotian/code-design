@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>集合类 & 枚举类型</title>
+</head>
+
+<body>
+    <h3>集合类</h3>
+    <script>
+    function Set() {
+        this.values = {};
+        this.n = 0;
+        this.add.apply(this, arguments)
+    }
+    //	将每个参数都添加至集合中
+    Set.prototype.add = function() {
+        for (var i = 0, l = arguments.length; i < l; i++) {
+            var val = arguments[i];
+            var str = Set._v2s(val);
+            if (!this.values.hasOwnProperty(str)) {
+                this.values[str] = val;
+                this.n++;
+            }
+        }
+        return this;
+    }
+    //	从集合删除元素，这些元素由参数制定
+    Set.prototype.remove = function(){
+    	for(var i = 0, l = arguments.length; i < l; i++){
+    		var str = Set._v2s(arguments[i]);
+    		if(this.values.hasOwnProperty(str)){
+    			delete this.values[str];
+    			this.n--;
+    		}
+    	}
+    	return this;
+    }
+    //	如果集合包含这个值，则返回true；否则，返回false
+    Set.prototype.contains = function(value){
+    	return this.values.hasOwnProperty(Set._v2s(value));
+    }
+    //	返回集合的大小
+    Set.prototype.size = function(){
+    	return this.n;
+    }
+    //	遍历集合中的所有元素，在指定的上下文中调用f
+    Set.prototype.foreach = function(f,context){
+    	for(var s in this.values){
+    		if(this.values.hasOwnProperty(s)){
+    			f.call(context,this.values[s])
+    		}
+    	}
+    }
+    //	这是一个内部函数，用以将任意js值和唯一的字符串对应起来
+    Set._v2s = function(val){
+    	switch(val){
+    		case undefined: return 'u';
+    		case null: return 'n';
+    		case true: return 't';
+    		case false: return 'f';
+    		default: switch(typeof val){
+    			case 'number': return '#' + val;
+    			case 'string': return '"' + val;
+    			default: return '@' + objectId(val);
+    		}
+    	}
+    	function objectId(o){
+    		var prop = "|**objectid**|";
+    		if(!o.hasOwnProperty(prop)){
+    			o[prop] = Set._v2s.next++
+    		}
+    		return o[prop];
+    	}
+    }
+    Set._v2s.next = 100;
+    var bar = new Set('aaa');
+    bar.add('bbb');
+    bar.add('aaa');
+    bar.remove('bbb');
+    bar.add([1,2]);
+    bar.add(['a','b']);
+    console.log(bar);
+    </script>
+</body>
+
+</html>

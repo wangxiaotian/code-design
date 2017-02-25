@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>订阅-发布：模块间的通信</title>
+</head>
+<body>
+	<button id = "count">点击</button>
+	<div id="show"></div>
+	<script>
+		window.onload = function(){
+			/*var count = 0,
+				oShow = document.getElementById('show');*/
+			var Event = (function(){
+				var clientList = [],
+					listen,
+					trigger;
+				listen = function(key,fn){
+					if(!clientList[key]){
+						clientList[key] = []
+					}
+					clientList[key].push(fn);
+				};
+				trigger = function(){
+					var key = Array.prototype.shift.call(arguments),
+						fns = clientList[key];
+					if(!fns || (fns.length === 0)){
+						return false;
+					}
+					for(var i = 0, fn; fn = fns[i++];){
+						fn.apply(this,arguments);
+					}
+				};
+				return {
+					listen: listen,
+					trigger: trigger
+				}
+			})()
+			/*Event.listen('click_count',function(obj){
+				count++;
+				obj.innerHTML = count;
+			})
+			document.getElementById('count').onclick = function(){
+				Event.trigger('click_count',oShow);
+			}*/
+			//	书上示例
+			//	分清了职责，订阅者只负责展示。发布者负责计算传递结果/
+			var a = (function(){
+				var count = 1;
+				var button = document.getElementById('count');
+				button.onclick = function(){
+					Event.trigger('add',count++);
+				}
+			})()
+			var b = (function(){
+				var div = document.getElementById('show');
+				Event.listen('add',function(count){
+					div.innerHTML = count;
+				})
+			})()
+		}
+	</script>
+</body>
+</html>

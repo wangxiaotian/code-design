@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>观察者模式(发布-订阅模式)</title>
+</head>
+
+<body>
+    <h3>售楼示例</h3>
+    <p>售楼处：买房者，留个电话吧</p>
+    <script>
+    window.onload = function() {
+        //	定义售楼处
+        var salesOffices = {};
+        //	缓存列表，存放订阅者的回调函数
+        salesOffices.clientList = [];
+
+        //	增加订阅者
+        salesOffices.listen = function(key,fn) {
+        	//	唯一key值对应一个订阅者
+        	if(!this.clientList[key]){
+        		this.clientList[key] = [];
+        	}
+            this.clientList[key].push(fn);
+        };
+
+        //	发布消息
+        salesOffices.trigger = function() {
+        	//	取出要发布的key
+        	var key = Array.prototype.shift.call(arguments);
+        	//	取出要发布的key对应的回调函数
+        	var fns = this.clientList[key];
+        	//	如果这个key没有对应的回调函数，则返回
+        	if(!fns || fns.length === 0) return false;
+            for (var i = 0, fn; fn = fns[i++];) {
+                fn.apply(this, arguments)
+            }
+        }
+        //	发布消息时，一个key值对应一个订阅者
+        /*增加订阅者*/
+        //	小明订阅
+        salesOffices.listen('小明',function(price,squareMeter){
+        	console.log('小明');
+        	console.log('价格是' + price);
+        	console.log('面积是' + squareMeter);
+        })
+        //	小红订阅
+        salesOffices.listen('小红',function(price,squareMeter){
+        	console.log('小红');
+        	console.log('价格是' + price);
+        	console.log('面积是' + squareMeter);
+        })
+        /*salesOffices.trigger('小红','100W','100平方');
+        salesOffices.trigger('小明','300W','120平方');
+        salesOffices.trigger('小张','500W','120平方');*/
+    }
+    //	升级版
+    /*;(function(){
+    	var event = {
+    		clientList: [],			//	订阅回调列表
+    		listen: function(key,fn){
+    			if(!this.clientList[key]){
+    				this.clientList[key] = [];
+    			}
+    			this.clientList[key].push(fn);
+    		},
+    		trigger: function(){
+    			var key = Array.prototype.shift.call(arguments);
+    			var fns = this.clientList[key];
+    			if(!fns || fns.length === 0){
+    				return false;
+    			}
+    			for(var i = 0,fn; fn = fns[i++];){
+    				fn.apply(this,arguments);
+    			}
+    		}
+    	};
+    	var installEvent = function(obj){
+    		for(i in event){
+    			obj[i] = event[i];
+    		}
+    		return obj;
+    	};
+    	var salesOffices = {};
+    	salesOffices = installEvent(salesOffices);
+    	salesOffices.listen('xiaozhang',function(price,squareMeter){
+    		console.log('价格是' + price);
+    		console.log('面积是' + squareMeter);
+    	})
+    	salesOffices.trigger('xiaozhang','30W','100平方米');
+    })();*/
+    //	升级版(添加中介，发布者与订阅者接触耦合);
+    var Event = (function(){
+    	var clientList = [],
+    		listen,
+    		trigger,
+    		remove;
+    	//	订阅
+    	listen = function(key,fn){
+    		//	先检测。一个key里边可以推入多个回调
+    		if(!clientList[key]){
+    			clientList[key] = [];
+    		}
+    		clientList[key].push(fn);
+    	};
+    	//	发布 							订阅和发布通过缓存列表来通信
+    	trigger = function(){
+    		var key = Array.prototype.shift.call(arguments),
+    			fns = clientList[key];
+    		if(!fns || fns.length === 0){
+    			return false;
+    		}
+    		for(var i = 0, fn; fn = fns[i++];){
+    			fn.apply(this,arguments);
+    		}
+    	};
+    	remove = function(key,fn){
+    		var key = Array.prototype.shift.call(arguments),
+    			fns = clientList[key];
+    		if(!fns || fns.length === 0){
+    			return false;
+    		}
+    		if(!fn){
+    			fns && (fns.length = 0);
+    		}
+    		//	取消的是保存在订阅者缓存中的回调
+    		for(var i = 0, l = fns.length; i < l; i++){
+    			var _fn = fns[i];
+    			if(fn === _fn){
+    				fns.splice(i + 1,1);
+    			}
+    		}
+    	};
+    	return {
+    		listen: listen,
+    		trigger: trigger,
+    		remove: remove
+    	}
+    })()
+    //	订阅
+    Event.listen('小红',function(squareMeter){
+    	console.log('我订阅的是' + squareMeter);
+    })
+    //	发布
+    Event.trigger('小红','100平方米');
+    //	Event.remove('小红');
+    Event.trigger('小红','80平方米');
+    </script>
+</body>
+
+</html>
