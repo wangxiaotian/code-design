@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>代理模式</title>
+</head>
+<body>
+	<div>生活就是运行的代码，由小明追女神的片段来讲解代理模式</div>
+	<script>
+		//	不用代理模式
+		/*var Flower = function(name){
+			this.name = name + '花';
+		};
+		var xiaoMing = {
+			sendFlower: function(person){
+				var flower = new Flower('百合');
+				person.receiveFlower(flower)
+			}
+		};
+		var goddess = {
+			receiveFlower: function(flower){
+				console.log('我收到' + flower.name + '了');
+			}
+		}
+		xiaoMing.sendFlower(goddess);*/
+		//	代理模式
+		var Flower = function(name){
+			this.name = name + '花';
+		}
+		var xiaoMing = {
+			sendFlower: function(person){
+				var flower = new Flower('牵牛');
+				person.receiveFlower(flower);
+			}
+		}
+		var daiLi = {
+			receiveFlower: function(flower){
+				goddess.receiveFlower(flower)
+			}
+		}
+		var goddess = {
+			receiveFlower: function(flower){
+				console.log('我收到' + flower.name + '了');
+			}
+		}
+		xiaoMing.sendFlower(daiLi);
+	</script>
+</body>
+</html>
