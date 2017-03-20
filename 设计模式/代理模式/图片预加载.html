@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>图片预加载</title>
+	<style>
+		.img{
+			width:200px;
+
+		}
+		.img img{
+			width:100%;
+		}
+	</style>
+</head>
+<body>
+	<div class="img">
+		<h3>这里有图片</h3>
+	</div>
+	<script>
+		window.onload = function(){
+			var myImage = (function(){
+				var imgNode = document.createElement('img');
+				document.getElementsByClassName('img')[0].appendChild(imgNode);
+				return {
+					setSrc: function(src){
+						imgNode.src = src;
+					}
+				}
+			})();
+			var proxyImage = (function(){
+				var img = new Image();
+				img.onload = function(){
+					myImage.setSrc(this.src);
+				}
+				return {
+					setSrc: function(src){
+						myImage.setSrc('img/1.jpg');
+						//	之所以懒加载，耗时就在这里，设置src时如果是别的服务器图片就要发请求，自然会耗时间
+						img.src = src;
+					}
+				}
+			})();
+			proxyImage.setSrc('img/2.jpg');
+		}
+	</script>
+</body>
+</html>
